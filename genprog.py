@@ -49,8 +49,7 @@ class GP(object):
         self.max_depth = max_depth
 
     def __str__(self):
-        return "GP(max_depth='%s', population_size='%s', " +
-            "generations='%s')" % (self.max_depth,
+        return "GP(max_depth='%s', population_size='%s', generations='%s')" % (self.max_depth,
             self.population_size, self.generations)
 
     def get_params(self, deep=False):
@@ -116,7 +115,11 @@ class GP(object):
         modification = eval(code_comp)
         modification = modification-modification.min()
         modification = modification/modification.max()
-        score = sum(abs(self.y - modification))
+        #print modification
+        #print type(modification)
+        #5/0
+        score = 1-np.mean(abs(self.y - modification))
+        #score = 1-(np.mean(modification^self.y))
         self.rmse_accum   += (score, (modification))
         return score
 

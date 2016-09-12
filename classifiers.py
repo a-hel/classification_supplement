@@ -39,9 +39,9 @@ def get_classifiers():
 			'clf': GP,
 			'params': 
 				{'max_depth': [5,7], 'population_size': [500, 100],
-				'generations': [100, 300, 500]}
+				'generations': [100, 500]}
 			
 		},
 
 	]
-	return [classifiers[3],]
+	return classifiers
