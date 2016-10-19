@@ -1,38 +1,11 @@
 import loadfile
 import classifiers
 
+import sys
+
 import numpy as np
 from sklearn import cross_validation
 from sklearn.grid_search import GridSearchCV
-
-
-
-  
-def _active_wells(cols=('B', 'G'), rows=(2, 11), leading_zero=True):
-    """Get the cell designation (e.g. 'A01', 'B2') for the indicated area
-
-    Arguments:
-    cols (tuple of chars): The first and last column, e.g. ('A','g').
-    rows (tuple of ints): The first and last row, e.g. (2,8).
-    leading_zero (bool, default=True): Whether to add a leading zero to
-        one-digit numbers
-
-    Returns:
-    List with all cell names in the area, both with leading zero and
-        without."""
-
-    y = [ord(i.upper())-64 for i in cols]
-    col_range = range(min(y)-1, max(y))
-    row_range = range(min(rows)-1, max(rows))
-    if leading_zero:
-        fmt = "{0}{1:02d}"
-    else:
-        fmt =  "{0}{1}"
-    ret_val = []
-    for y in col_range:
-        for x in row_range:
-            ret_val += [fmt.format(chr(y+65), x+1)]
-    return ret_val
 
 def _find_estimator(X, y, classifier):
 	"""Inner loop, find best hyperparameters"""
@@ -47,6 +20,7 @@ def _find_estimator(X, y, classifier):
 
 def _get_labels(y):
 	#write nicer
+	y = y.fillna('')
 	y_e = [True if 'E' in i else False for i in y]
 	y_s = [True if 'S' in i else False for i in y]
 	y_c = [True if 'C' in i else False for i in y]
@@ -76,9 +50,11 @@ def save_buffer(f_buffer, f_name="results.txt"):
 			f.write("\n")
 
 if __name__ == '__main__':
-	df = loadfile.load_data("collected_data.csv")#"online")#online
-	filter_by_well = df['WELL'].isin(_active_wells())
-	df = df[filter_by_well]
+	if len(sys.argv) != 2:
+		print("\n!   Invalid command: Please provide a file name")
+		print("    or, for online datasets, the dataset number.\n")
+		sys.exit(0)
+	df = loadfile.load_data(sys.argv[1])
 	y = df.ix[:,'LABEL']
 	X = df.ix[:, '230':]
 	

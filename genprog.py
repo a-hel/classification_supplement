@@ -89,6 +89,7 @@ class GP(object):
         ga.setGenerations(self.generations)
         ga.setCrossoverRate(1.0)
         ga.setMutationRate(0.50)
+        ga.setMultiProcessing(False)
         ga.setPopulationSize(self.population_size)
         ga(freq_stats=100)
         self.ga = ga
@@ -104,7 +105,8 @@ class GP(object):
         score = eval(self.win_code)
         score = score-score.min()
         score = score/score.max()
-        score = np.around(score,0).astype('bool')
+        print score
+        score = np.around(score.values,0).astype('bool')
         return score
 
     def _eval(self, genome):
@@ -115,11 +117,7 @@ class GP(object):
         modification = eval(code_comp)
         modification = modification-modification.min()
         modification = modification/modification.max()
-        #print modification
-        #print type(modification)
-        #5/0
-        score = 1-np.mean(abs(self.y - modification))
-        #score = 1-(np.mean(modification^self.y))
+        score = sum(abs(self.y - modification))
         self.rmse_accum   += (score, (modification))
         return score
 
@@ -157,8 +155,8 @@ class ANN(object):
         trainer = BackpropTrainer(self.nn, self.ds)
         #trainer.train() # alternative training
         trainer.trainUntilConvergence(maxEpochs=self.maxEpochs) # alternative training
-        
-   
+
+
 
     def predict(self, X):
         pre_alloc = np.zeros(X.shape[0])
@@ -174,5 +172,3 @@ class ANN(object):
 
 
     # trainer: back-propagation
-    
-    
